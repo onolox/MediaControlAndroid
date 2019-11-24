@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Playador</string>
+    <string name="sem_arquivos">Sem Arquivos</string>
+    <string name="arquivos_lidos">Arquivos Lidos</string>
+</resources>
