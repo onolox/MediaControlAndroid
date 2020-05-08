@@ -46,8 +46,7 @@ public class LeitorArquivos {
             }
             Log.d("ProxyIntent", "QTD arquivos " + listaArquivos.size());
             
-            buscarProximoLista();
-            
+            MainActivity.mAdapter.notifyDataSetChanged();
         }
         catch (SecurityException e) {
             e.printStackTrace();
@@ -55,6 +54,48 @@ public class LeitorArquivos {
         catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    
+    static Uri buscarProximoLista() {
+        Uri retorno = null;
+        DocumentFile sdCard = getSdCard();
+        if (sdCard == null) return null;
+        
+        if (ultimoArquivo == null || ultimoArquivo.isEmpty()) {
+            DocumentFile ultimoArq = sdCard.findFile("UltimoArquivo.txt");
+            if (ultimoArq != null && ultimoArq.exists()) {
+                try (InputStream inputStream = MainActivity.contexto.getContentResolver().openInputStream(ultimoArq.getUri()); BufferedReader reader =
+                        new BufferedReader(new InputStreamReader(Objects.requireNonNull(inputStream)))) {
+                    String s = reader.readLine();
+                    if (s != null) {
+                        ultimoArquivo = s;
+                        Log.d("ProxyIntent", "Último arquivo lido: " + s);
+                    }
+                }
+                catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            else {
+                ultimoArquivo = listaArquivos.getFirst().getLastPathSegment().split(":")[1];
+                return listaArquivos.getFirst();
+            }
+        }
+        
+        for (Uri uri : listaArquivos) {
+            String nome = uri.getLastPathSegment().split(":")[1].substring(0, 3);
+            
+            if (ultimoArquivo.startsWith(nome)) {
+                ultimoArquivo = uri.getLastPathSegment().split(":")[1];
+                retorno = uri;
+                break;
+            }
+        }
+        
+        return retorno;
     }
     
     public static void gravarPosicao(int posicao) {
@@ -149,48 +190,6 @@ public class LeitorArquivos {
                 }
             }
         }
-        return retorno;
-    }
-    
-    static Uri buscarProximoLista() {
-        Uri retorno = null;
-        DocumentFile sdCard = getSdCard();
-        if (sdCard == null) return null;
-        
-        if (ultimoArquivo == null || ultimoArquivo.isEmpty()) {
-            DocumentFile ultimoArq = sdCard.findFile("UltimoArquivo.txt");
-            if (ultimoArq != null && ultimoArq.exists()) {
-                try (InputStream inputStream = MainActivity.contexto.getContentResolver().openInputStream(ultimoArq.getUri()); BufferedReader reader =
-                        new BufferedReader(new InputStreamReader(Objects.requireNonNull(inputStream)))) {
-                    String s = reader.readLine();
-                    if (s != null) {
-                        ultimoArquivo = s;
-                        Log.d("ProxyIntent", "Último arquivo lido: " + s);
-                    }
-                }
-                catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-                catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            else {
-                ultimoArquivo = listaArquivos.getFirst().getLastPathSegment().split(":")[1];
-                return listaArquivos.getFirst();
-            }
-        }
-        
-        for (Uri uri : listaArquivos) {
-            String nome = uri.getLastPathSegment().split(":")[1].substring(0, 3);
-            
-            if (ultimoArquivo.startsWith(nome)) {
-                ultimoArquivo = uri.getLastPathSegment().split(":")[1];
-                retorno = uri;
-                break;
-            }
-        }
-        
         return retorno;
     }
     

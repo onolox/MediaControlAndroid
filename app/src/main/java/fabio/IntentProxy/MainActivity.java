@@ -23,13 +23,14 @@ public class MainActivity extends AppCompatActivity {
     BroadcastReceiver receiverScreenOn;
     static Context contexto;
     static ArrayAdapter<String> mAdapter;
+    static ListView lstView;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         contexto = this;
-        ListView lstView = findViewById(R.id.lstView);
+        lstView = findViewById(R.id.lstView);
         ArrayList<String> listaItens = new ArrayList<String>();
         
         mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listaItens);

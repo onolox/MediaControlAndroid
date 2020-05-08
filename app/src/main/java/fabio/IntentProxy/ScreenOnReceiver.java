@@ -26,8 +26,6 @@ public class ScreenOnReceiver extends BroadcastReceiver {
                     MainActivity.contexto.startActivity(enviarIntent);
                 }
             }
-        }, 8000);
-        
+        }, 7000);
     }
-    
 }

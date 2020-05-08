@@ -37,7 +37,7 @@ public class EnviarActivity extends AppCompatActivity {
             if (LeitorArquivos.listaArquivos.size() > 0) {
                 Log.d("ProxyIntent", "Tocando da posição: " + LeitorArquivos.lerPosicao());
                 Intent mxIntent = new Intent(Intent.ACTION_VIEW);
-                mxIntent.setPackage("com.mxtech.videoplayer.ad");
+                mxIntent.setPackage("com.mxtech.videoplayer.pro");
                 mxIntent.setDataAndTypeAndNormalize(uri, "video/*");
                 mxIntent.putExtra("position", LeitorArquivos.lerPosicao());
                 mxIntent.putExtra("return_result", true);
@@ -64,10 +64,14 @@ public class EnviarActivity extends AppCompatActivity {
                         }
                         else if (data.getStringExtra("end_by").contains("playback_completion")) {
                             Log.d("ProxyIntent", "Deletando arquivo finalizado");
-                            DocumentFile arq = DocumentFile.fromSingleUri(MainActivity.contexto, LeitorArquivos.listaArquivos.getFirst());
-                            arq.delete();
-                            LeitorArquivos.lerArquivos();
+                            
+                            for (Uri uri : LeitorArquivos.listaArquivos) {
+                                if (uri.getLastPathSegment().contains(LeitorArquivos.ultimoArquivo)) {
+                                    DocumentFile.fromSingleUri(MainActivity.contexto, uri).delete();
+                                }
+                            }
                             LeitorArquivos.gravarPosicao(1);
+                            LeitorArquivos.lerArquivos();
                             enviar();
                         }
                         else {
@@ -75,6 +79,7 @@ public class EnviarActivity extends AppCompatActivity {
                         }
                     }
                 }
+                
             }
         }
     }
